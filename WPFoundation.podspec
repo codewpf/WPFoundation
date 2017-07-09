@@ -8,7 +8,7 @@ s.author           = { 'Alex' => 'ioswpf@gmail.com' }
 s.source           = {
     :git => 'https://github.com/codewpf/WPFoundation.git',
     :tag => s.version.to_s }
-s.social_media_url = 'https://twitter.com/Alex___0394'
+s.social_media_url = 'https://twitter.com/alexsayhi0394'
 
 s.ios.deployment_target = '8.0'
 
