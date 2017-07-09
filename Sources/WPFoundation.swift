@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import WPFCommonCrypto
 
 //MARK: -
 public extension String {
@@ -16,23 +15,6 @@ public extension String {
     /// 字符串长度
     var length: Int {
         return self.characters.count
-    }
-    
-    /// String MD5Extension
-    var md5String: String! {
-        let str = self.cString(using: .utf8)
-        let strlen =  CC_LONG(self.lengthOfBytes(using: .utf8))
-        let digestLen = Int(CC_MD5_DIGEST_LENGTH)
-        let result = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: digestLen)
-        CC_MD5(str, strlen, result)
-        
-        let hash = NSMutableString()
-        for i in 0..<digestLen {
-            hash.appendFormat("%02x", result[i])
-        }
-        result.deallocate(capacity: digestLen)
-        
-        return String(hash)
     }
     
     /// 截取字符串 from

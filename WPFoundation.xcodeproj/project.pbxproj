@@ -14,7 +14,6 @@
 		FA4D3C491F124E3C003E4F4A /* WPFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WPFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4D3C4D1F124E3C003E4F4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA4D3C571F125192003E4F4A /* WPFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WPFoundation.swift; sourceTree = "<group>"; };
-		FA4D3C5B1F1254A2003E4F4A /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,18 +55,9 @@
 		FA4D3C541F125192003E4F4A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				FA4D3C5A1F1254A2003E4F4A /* WPFCommonCrypto */,
 				FA4D3C571F125192003E4F4A /* WPFoundation.swift */,
 			);
 			path = Sources;
-			sourceTree = "<group>";
-		};
-		FA4D3C5A1F1254A2003E4F4A /* WPFCommonCrypto */ = {
-			isa = PBXGroup;
-			children = (
-				FA4D3C5B1F1254A2003E4F4A /* module.modulemap */,
-			);
-			path = WPFCommonCrypto;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,11 +263,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "";
-				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "${SRCROOT}/Cocoapods/iphoneos";
-				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "${SRCROOT}/Cocoapods/iphonesimulator";
-				"SWIFT_INCLUDE_PATHS[sdk=macosx*]" = "${SRCROOT}/Cocoapods/macosx";
-				"SWIFT_INCLUDE_PATHS[sdk=watchos*]" = "${SRCROOT}/Cocoapods/watchos";
-				"SWIFT_INCLUDE_PATHS[sdk=watchsimulator*]" = "${SRCROOT}/Cocoapods/watchsimulator";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -298,11 +283,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "";
-				"SWIFT_INCLUDE_PATHS[sdk=iphoneos*]" = "${SRCROOT}/Cocoapods/iphoneos";
-				"SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]" = "${SRCROOT}/Cocoapods/iphonesimulator";
-				"SWIFT_INCLUDE_PATHS[sdk=macosx*]" = "${SRCROOT}/Cocoapods/macosx";
-				"SWIFT_INCLUDE_PATHS[sdk=watchos*]" = "${SRCROOT}/Cocoapods/watchos";
-				"SWIFT_INCLUDE_PATHS[sdk=watchsimulator*]" = "${SRCROOT}/Cocoapods/watchsimulator";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
