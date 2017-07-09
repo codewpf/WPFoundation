@@ -1,0 +1,4 @@
+module WPFCommonCrypto {
+  header "/usr/include/CommonCrypto/CommonCrypto.h"
+  export *
+}
