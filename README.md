@@ -53,7 +53,7 @@ import WPFoundation
 ```
 
 ## Contact
-Follow and contact me on [Twitter](https://twitter.com/Alex___0394) or [Sina Weibo](http://weibo.com/codewpf ). If you find an issue, just [open a ticket](https://github.com/codewpf/WPFBannerView/issues/new). Pull requests are warmly welcome as well.
+Follow and contact me on [Twitter](https://twitter.com/Alex___0394) or [Sina Weibo](http://weibo.com/codewpf ). If you find an issue, just [open a ticket](https://github.com/codewpf/WPFoundation/issues/new). Pull requests are warmly welcome as well.
 
 ## License
 WPFBannerView is released under the MIT license. See LICENSE for details.
