@@ -160,7 +160,7 @@ public extension UIColor {
 }
 
 //MARK: -
-extension Dictionary {
+public extension Dictionary {
     func paraStr() -> String {
         var str = ""
         for (key, value) in self {
@@ -228,7 +228,7 @@ public extension UIImage {
 }
 
 //MARK: -
-extension Bundle {
+public extension Bundle {
     
     var name: String {
         guard let name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String else { return "not found" }
@@ -365,7 +365,7 @@ public extension UIDevice {
         case "iPod7,1":                                 return "iPod Touch 6"
         case "iPhone3,1", "iPhone3,2", "iPhone3,3":     return "iPhone 4"
         case "iPhone4,1":                               return "iPhone 4S"
-        case "iPhone5,1", "iPhone5,2", "iPhone5,3", "iPhone5,4", "iPhone6,1", "iPhone6,2", "iPhone8,4":                  return "iPhone 5"
+        case "iPhone5,1", "iPhone5,2":                  return "iPhone 5"
         case "iPhone5,3", "iPhone5,4":                  return "iPhone 5C"
         case "iPhone6,1", "iPhone6,2":                  return "iPhone 5S"
         case "iPhone7,2":                               return "iPhone 6"
