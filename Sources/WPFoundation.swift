@@ -9,6 +9,15 @@
 import Foundation
 import UIKit
 
+/// 自定义输出
+public func WPFLog<T>(_ message: T, fileName: String = #file, methodName: String =  #function, lineNumber: Int = #line)
+{
+    #if DEBUG
+        let str : String = (fileName as NSString).pathComponents.last!.replacingOccurrences(of: "swift", with: "");
+        print("\(Date()) \(str) \(methodName) [\(lineNumber) line] ---------->\n\(message)")
+    #endif
+}
+
 //MARK: -
 public extension String {
     
@@ -175,7 +184,7 @@ public extension UIImage {
     
     public static func image(withColor color: UIColor, _ rect: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1)) -> UIImage {
         
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, UIDevice.screenS)
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, UIScreen.screenS)
         color.setFill()
         UIRectFill(rect)
         let image = UIGraphicsGetImageFromCurrentImageContext()
@@ -233,6 +242,11 @@ public extension Bundle {
     var name: String {
         guard let name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String else { return "not found" }
         return name
+    }
+    
+    var bundleID: String {
+        guard let bundleID = Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String else { return "none" }
+        return bundleID
     }
     
     var version: String {
@@ -347,6 +361,44 @@ public extension CGRect {
     
 }
 
+//MARK: -
+public extension UIScreen {
+    /// 屏幕计算尺寸
+    static var screenS: CGFloat {
+        get {
+            return UIScreen.main.scale
+        }
+    }
+    static var screenW: CGFloat {
+        get {
+            return UIScreen.main.bounds.width
+        }
+    }
+    
+    static var screenH: CGFloat {
+        get {
+            return UIScreen.main.bounds.height
+        }
+    }
+    static var screenRW: CGFloat {
+        get {
+            return UIScreen.main.scale * UIScreen.main.bounds.width
+        }
+    }
+    
+    static var screenRH: CGFloat {
+        get {
+            return UIScreen.main.scale * UIScreen.main.bounds.height
+        }
+    }
+    
+    static var screenRS: CGFloat {
+        get {
+            return UIScreen.main.scale / 2
+        }
+    }
+}
+
 
 //MARK: -
 public extension UIDevice {
@@ -391,42 +443,17 @@ public extension UIDevice {
         }
     }
     
-    /// 屏幕计算尺寸
-    static var screenS: CGFloat {
-        get {
-            return UIScreen.main.scale
-        }
-    }
-    static var screenW: CGFloat {
-        get {
-            return UIScreen.main.bounds.width
-        }
-    }
-    
-    static var screenH: CGFloat {
-        get {
-            return UIScreen.main.bounds.height
-        }
-    }
-    static var screenRW: CGFloat {
-        get {
-            return UIScreen.main.scale * UIScreen.main.bounds.width
-        }
-    }
-    
-    static var screenRH: CGFloat {
-        get {
-            return UIScreen.main.scale * UIScreen.main.bounds.height
-        }
-    }
-    
-    static var screenRS: CGFloat {
-        get {
-            return UIScreen.main.scale / 2
-        }
-    }
-    
 }
+
+//MARK: -
+public extension Date {
+    public func userFormatter(_ format: String) -> String {
+        let formatter: DateFormatter = DateFormatter()
+        formatter.dateFormat = format
+        return formatter.string(from: self)
+    }
+}
+
 
 
 //MARK: - MD5, it comes from Onevcat https://github.com/onevcat/
