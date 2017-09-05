@@ -18,6 +18,15 @@ public func WPFLog<T>(_ message: T, fileName: String = #file, methodName: String
     #endif
 }
 
+//MARK: - 
+public extension Array where Element: Equatable {
+    mutating func remove(object: Element) {
+        if let index = index(of: object) {
+            remove(at: index)
+        }
+    }
+}
+
 //MARK: -
 public extension String {
     
