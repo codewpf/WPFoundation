@@ -14,7 +14,7 @@ public func WPFLog<T>(_ message: T, fileName: String = #file, methodName: String
 {
     #if DEBUG
         let str : String = (fileName as NSString).pathComponents.last!.replacingOccurrences(of: "swift", with: "");
-        print("\(Date()) \(str) \(methodName) [\(lineNumber) line] ---------->\n\(message)")
+        print("\(Date()) \(str)\(methodName) [\(lineNumber) line] ---------->\n\(message)")
     #endif
 }
 
@@ -248,7 +248,7 @@ public extension UIImage {
 //MARK: -
 public extension Bundle {
     
-    var name: String {
+    var bundleName: String {
         guard let name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String else { return "not found" }
         return name
     }
@@ -258,7 +258,7 @@ public extension Bundle {
         return bundleID
     }
     
-    var version: String {
+    var bundleVersion: String {
         guard let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else { return "1.0" }
         return version
     }
