@@ -4,7 +4,8 @@
 //
 //  Created by alex on 2017/7/8.
 //
-//
+//  old version 0.3.3
+//  new version 0.3.4
 
 import Foundation
 import UIKit
@@ -16,6 +17,53 @@ public func WPFLog<T>(_ message: T, fileName: String = #file, methodName: String
         let str : String = (fileName as NSString).pathComponents.last!.replacingOccurrences(of: "swift", with: "");
         print("\(Date()) \(str)\(methodName) [\(lineNumber) line] ---------->\n\(message)")
     #endif
+}
+
+//MARK: -
+public extension NSObject {
+    
+    class func swapMethod(originSel: Selector, swapSel: Selector) {
+        let originMet: Method = class_getInstanceMethod(self, originSel)
+        let swapMet: Method = class_getInstanceMethod(self, swapSel)
+        
+        let added = class_addMethod(self, originSel, method_getImplementation(swapMet), method_getTypeEncoding(swapMet))
+        if added == true {
+            class_replaceMethod(self, swapSel, method_getImplementation(originMet), method_getTypeEncoding(originMet))
+        } else {
+            method_exchangeImplementations(originMet, swapMet)
+        }
+    }
+    
+    func getMethodList() -> [String] {
+        var count: UInt32 = 0
+        guard let methodList = class_copyMethodList(type(of: self), &count) else {
+            return []
+        }
+        var mutabList: [String] = []
+        for i in 0 ..< count {
+            let method = methodList[Int(i)]
+            if let sel = method_getName(method) {
+                mutabList.append(NSStringFromSelector(sel))
+            }
+        }
+        return mutabList
+    }
+    
+    func getPropertyList() -> [String] {
+        var count: UInt32 = 0
+        guard let propertyList = class_copyPropertyList(type(of: self), &count) else {
+            return []
+        }
+        var mutabList: [String] = []
+        for i in 0 ..< count {
+            if let name = property_getName(propertyList[Int(i)]),
+                let nstr = NSString.init(utf8String: name) {
+                mutabList.append("\(nstr)")
+            }
+        }
+        return mutabList
+    }
+
 }
 
 //MARK: - 
@@ -73,8 +121,8 @@ public extension String {
         }
         return self.substring(to: self.index(self.startIndex, offsetBy:String.IndexDistance(to)))
     }
-    /// 截取字符串 to
-    /// - Parameter to: 结束为止
+    /// 截取字符串 Range
+    /// - Parameter range: 截取的区间
     func substring(range: NSRange) -> String {
         
         if let r = range.toRange() {
@@ -86,15 +134,21 @@ public extension String {
     }
     
     /// 替换字符串
-    mutating func replace(range: NSRange) {
+    mutating func replace(range: NSRange, place: String = "****") {
         
         if let r = range.toRange() {
             let start = self.index(self.startIndex, offsetBy: r.lowerBound)
             let end = self.index(self.startIndex, offsetBy: r.upperBound)
             let range = Range(start..<end)
             
-            self.replaceSubrange(range, with: "****")
+            self.replaceSubrange(range, with: place)
         }
+    }
+    
+    
+    func contains(_ str: String) -> Bool {
+        let nstr: NSString = NSString(string: self)
+        return nstr.contains(str)
     }
     
     
@@ -249,7 +303,7 @@ public extension UIImage {
 public extension Bundle {
     
     var bundleName: String {
-        guard let name = Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String else { return "not found" }
+        guard let name = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String else { return "not found" }
         return name
     }
     
@@ -262,7 +316,63 @@ public extension Bundle {
         guard let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else { return "1.0" }
         return version
     }
+    
+    var bundleLaunchImageName: String {
+        guard let info = Bundle.main.infoDictionary,
+            let assets: [[String:String]] = info["UILaunchImages"] as? [[String : String]] else {
+                return ""
+        }
+        
+        let sSize = UIScreen.main.bounds.size
+        print(sSize)
+        
+        var sOrientation = ""
+        switch UIApplication.shared.statusBarOrientation {
+        case .landscapeLeft, .landscapeRight :
+            sOrientation = "Landscape"
+        case .portrait, .portraitUpsideDown :
+            sOrientation = "Portrait"
+        default:
+            sOrientation = ""
+        }
+        
+        for asset in assets {
+            let size: CGSize = CGSizeFromString(asset["UILaunchImageSize"] ?? "{0, 0}")
+            let orientation = asset["UILaunchImageOrientation"] ?? ""
+            if size == sSize && orientation == sOrientation {
+                return asset["UILaunchImageName"] ?? ""
+            }
+            
+        }
+        return ""
+    }
 }
+//MARK: -
+public extension UINavigationBar {
+    public class func initializeOneMethod() {
+        DispatchQueue.once(token: "Update_UINavigationBar_Layout_Margin") {
+            self.swapMethod(originSel: #selector(layoutSubviews), swapSel: #selector(wpfLayoutSubviews))
+        }
+    }
+    
+    func wpfLayoutSubviews() {
+        self.wpfLayoutSubviews()
+        
+        // Solve the problem that left margin is too wide
+        if #available(iOS 11.0, *) {
+            self.layoutMargins = UIEdgeInsets.zero
+            let space: CGFloat = 8
+            for subview in self.subviews {
+                if NSStringFromClass(type(of: subview)).contains("ContentView") {
+                    subview.layoutMargins = UIEdgeInsets(top: 0, left: space, bottom: 0, right: space)
+                }
+            }
+        }
+        
+    }
+}
+
+
 
 //MARK: -
 public extension UIView {
@@ -436,6 +546,9 @@ public extension UIDevice {
         case "iPhone8,4":                               return "iPhone SE"
         case "iPhone9,1":                               return "iPhone 7"
         case "iPhone9,2":                               return "iPhone 7 Plus"
+        case "iPhone10,1", "iPhone10,4":                return "iPhone 8"
+        case "iPhone10,2", "iPhone10,5":                return "iPhone 8 Plus"
+        case "iPhone10,3", "iPhone10,6":                return "iPhone X"
         case "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4":return "iPad 2"
         case "iPad3,1", "iPad3,2", "iPad3,3":           return "iPad 3"
         case "iPad3,4", "iPad3,5", "iPad3,6":           return "iPad 4"
@@ -463,9 +576,27 @@ public extension Date {
     }
 }
 
+//MARK: -
+public extension DispatchQueue {
+    private static var onceTracker = [String]()
+    
+    public class func once(token: String, block:()->Void) {
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
+        
+        if onceTracker.contains(token) {
+            return
+        }
+        
+        onceTracker.append(token)
+        block()
+    }
+}
 
 
-//MARK: - MD5, it comes from Onevcat https://github.com/onevcat/
+
+
+//MARK: - MD5 method, it comes from Onevcat https://github.com/onevcat/
 protocol HashProtocol {
     var message: Array<UInt8> { get }
     
