@@ -16,7 +16,7 @@ s.source           = { :git => 'https://github.com/codewpf/WPFoundation.git', :t
 s.source_files = 'Sources/WPFoundation.swift'
 
 
-s.pod_target_xcconfig = { 'SWIFT_VERSION' => '3.0' }
+s.pod_target_xcconfig = { 'SWIFT_VERSION' => '3.2' }
 
 
 
