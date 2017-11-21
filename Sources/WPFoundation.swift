@@ -4,8 +4,8 @@
 //
 //  Created by alex on 2017/7/8.
 //
-//  old version 0.3.4
-//  new version 0.3.5
+//  old version 0.3.5
+//  new version 0.4.0
 
 import Foundation
 import UIKit
@@ -23,14 +23,14 @@ public func WPFLog<T>(_ message: T, fileName: String = #file, methodName: String
 public extension NSObject {
     
     class func swapMethod(originSel: Selector, swapSel: Selector) {
-        let originMet: Method = class_getInstanceMethod(self, originSel)
-        let swapMet: Method = class_getInstanceMethod(self, swapSel)
-        
-        let added = class_addMethod(self, originSel, method_getImplementation(swapMet), method_getTypeEncoding(swapMet))
-        if added == true {
-            class_replaceMethod(self, swapSel, method_getImplementation(originMet), method_getTypeEncoding(originMet))
-        } else {
-            method_exchangeImplementations(originMet, swapMet)
+        if let originMet: Method = class_getInstanceMethod(self, originSel),
+            let swapMet: Method = class_getInstanceMethod(self, swapSel) {
+            let added = class_addMethod(self, originSel, method_getImplementation(swapMet), method_getTypeEncoding(swapMet))
+            if added == true {
+                class_replaceMethod(self, swapSel, method_getImplementation(originMet), method_getTypeEncoding(originMet))
+            } else {
+                method_exchangeImplementations(originMet, swapMet)
+            }
         }
     }
     
@@ -42,9 +42,8 @@ public extension NSObject {
         var mutabList: [String] = []
         for i in 0 ..< count {
             let method = methodList[Int(i)]
-            if let sel = method_getName(method) {
-                mutabList.append(NSStringFromSelector(sel))
-            }
+            mutabList.append(NSStringFromSelector(method_getName(method)))
+            
         }
         return mutabList
     }
@@ -56,8 +55,7 @@ public extension NSObject {
         }
         var mutabList: [String] = []
         for i in 0 ..< count {
-            if let name = property_getName(propertyList[Int(i)]),
-                let nstr = NSString.init(utf8String: name) {
+            if let nstr = NSString.init(utf8String: property_getName(propertyList[Int(i)])) {
                 mutabList.append("\(nstr)")
             }
         }
@@ -111,7 +109,7 @@ public extension String {
         guard self.length > Int(from) else {
             return ""
         }
-        return self.substring(from: self.index(self.startIndex, offsetBy:String.IndexDistance(from)))
+        return String(self[self.index(self.startIndex, offsetBy:String.IndexDistance(from))..<self.endIndex])
     }
     /// 截取字符串 to
     /// - Parameter to: 结束为止
@@ -119,16 +117,17 @@ public extension String {
         guard self.length >= Int(to) else {
             return self
         }
-        return self.substring(to: self.index(self.startIndex, offsetBy:String.IndexDistance(to)))
+        return String(self[self.startIndex..<self.index(self.startIndex, offsetBy:String.IndexDistance(to))])
     }
     /// 截取字符串 Range
     /// - Parameter range: 截取的区间
     func substring(range: NSRange) -> String {
         
-        if let r = range.toRange() {
+        if let r = Range.init(range) {
             let start = self.index(self.startIndex, offsetBy: r.lowerBound)
             let end = self.index(self.startIndex, offsetBy: r.upperBound)
-            return self.substring(with: Range(start..<end))
+            return String(self[start..<end])
+            //return self.substring(with: Range(start..<end))
         }
         return self
     }
@@ -136,7 +135,8 @@ public extension String {
     /// 替换字符串
     mutating func replace(range: NSRange, place: String = "****") {
         
-        if let r = range.toRange() {
+        
+        if let r = Range.init(range) {
             let start = self.index(self.startIndex, offsetBy: r.lowerBound)
             let end = self.index(self.startIndex, offsetBy: r.upperBound)
             let range = Range(start..<end)
@@ -164,7 +164,8 @@ public extension UIColor {
         var str: String = sHex.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines).uppercased()
         
         if str.hasPrefix("#") {
-            str = str.substring(from: str.index(str.startIndex, offsetBy: 1))
+            let sIndex = str.index(str.startIndex, offsetBy: 1)
+            str = String(str[sIndex..<str.endIndex])
         }
         
         var r:CUnsignedInt = 255
@@ -355,7 +356,7 @@ public extension UINavigationBar {
         }
     }
     
-    func wpfLayoutSubviews() {
+    @objc func wpfLayoutSubviews() {
         self.wpfLayoutSubviews()
         
         // Solve the problem that left margin is too wide
