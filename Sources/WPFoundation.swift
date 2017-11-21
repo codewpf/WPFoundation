@@ -4,8 +4,8 @@
 //
 //  Created by alex on 2017/7/8.
 //
-//  old version 0.3.3
-//  new version 0.3.4
+//  old version 0.3.4
+//  new version 0.3.5
 
 import Foundation
 import UIKit
@@ -78,9 +78,9 @@ public extension Array where Element: Equatable {
 //MARK: -
 public extension String {
     
-    /// 字符串长度p
+    /// 字符串长度
     var length: Int {
-        return self.characters.count
+        return self.count
     }
     
     var md5: String {
