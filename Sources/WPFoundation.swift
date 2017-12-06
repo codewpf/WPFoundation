@@ -377,7 +377,7 @@ public extension UINavigationBar {
 
 //MARK: -
 public extension UIView {
-    var width: CGFloat {
+    var kWidth: CGFloat {
         get {
             return frame.size.width
         }
@@ -386,7 +386,7 @@ public extension UIView {
         }
     }
     
-    var height: CGFloat {
+    var kHeight: CGFloat {
         get {
             return frame.size.height
         }
@@ -395,7 +395,7 @@ public extension UIView {
         }
     }
     
-    var leading: CGFloat {
+    var kLeft: CGFloat {
         get {
             return frame.origin.x
         }
@@ -404,7 +404,7 @@ public extension UIView {
         }
     }
     
-    var trailing: CGFloat {
+    var kRight: CGFloat {
         get {
             return frame.origin.x + frame.size.width
         }
@@ -413,7 +413,7 @@ public extension UIView {
         }
     }
     
-    var top: CGFloat {
+    var kTop: CGFloat {
         get {
             return frame.origin.y
         }
@@ -422,7 +422,7 @@ public extension UIView {
         }
     }
     
-    var bottom: CGFloat {
+    var kBottom: CGFloat {
         get {
             return frame.origin.y + frame.size.height
         }
@@ -431,11 +431,11 @@ public extension UIView {
         }
     }
     
-    var size: CGSize {
+    var kSize: CGSize {
         return frame.size
     }
     
-    var origin: CGPoint {
+    var kOrigin: CGPoint {
         return frame.origin
     }
     
@@ -443,7 +443,7 @@ public extension UIView {
 
 //MARK: -
 public extension CGRect {
-    var leading: CGFloat {
+    var kLeft: CGFloat {
         get {
             return origin.x
         }
@@ -452,7 +452,7 @@ public extension CGRect {
         }
     }
     
-    var trailing: CGFloat {
+    var kRight: CGFloat {
         get {
             return origin.x + size.width
         }
@@ -461,7 +461,7 @@ public extension CGRect {
         }
     }
     
-    var top: CGFloat {
+    var kTop: CGFloat {
         get {
             return origin.y
         }
@@ -470,7 +470,7 @@ public extension CGRect {
         }
     }
     
-    var bottom: CGFloat {
+    var kBottom: CGFloat {
         get {
             return origin.y + size.height
         }

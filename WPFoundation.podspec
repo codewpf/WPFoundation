@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name             = 'WPFoundation'
-s.version          = '0.4.0'
+s.version          = '0.4.1'
 s.summary          = 'WPFoundation is a private foundation framework for Swift develop'
 s.license          = { :type => 'MIT', :file => 'LICENSE' }
 
