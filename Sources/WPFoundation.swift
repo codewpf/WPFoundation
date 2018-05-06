@@ -105,11 +105,11 @@ public extension String {
     /// 截取字符串 from
     /// - Parameter from: 开始位置
     func substring(from: UInt) -> String {
-        
         guard self.length > Int(from) else {
             return ""
         }
-        return String(self[self.index(self.startIndex, offsetBy:String.IndexDistance(from))..<self.endIndex])
+        let idxStart = self.index(self.startIndex, offsetBy: Int(from))
+        return String(self[idxStart...])
     }
     /// 截取字符串 to
     /// - Parameter to: 结束为止
@@ -117,7 +117,9 @@ public extension String {
         guard self.length >= Int(to) else {
             return self
         }
-        return String(self[self.startIndex..<self.index(self.startIndex, offsetBy:String.IndexDistance(to))])
+        let offsetBy: Int = Int(to) - self.length
+        let idxEnd = self.index(self.endIndex, offsetBy: offsetBy)
+        return String(self[self.startIndex ..< idxEnd ])
     }
     /// 截取字符串 Range
     /// - Parameter range: 截取的区间
@@ -127,7 +129,6 @@ public extension String {
             let start = self.index(self.startIndex, offsetBy: r.lowerBound)
             let end = self.index(self.startIndex, offsetBy: r.upperBound)
             return String(self[start..<end])
-            //return self.substring(with: Range(start..<end))
         }
         return self
     }
@@ -698,8 +699,8 @@ func arrayOfBytes<T>(_ value: T, length: Int? = nil) -> [UInt8] {
         return bytes
     }
     
-    valuePointer.deinitialize()
-    valuePointer.deallocate(capacity: 1)
+    valuePointer.deinitialize(count: 1)
+    valuePointer.deallocate()
     
     return bytes
 }
