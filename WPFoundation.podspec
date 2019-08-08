@@ -15,6 +15,6 @@ s.source           = { :git => 'https://github.com/codewpf/WPFoundation.git', :t
 
 s.source_files = 'Sources/WPFoundation.swift'
 
-s.swift_versions = ['5.0']
+s.swift_version = '5.0'
 
 end
