@@ -25,7 +25,7 @@ There are two way to use WPFBannerView in your project, or directly drag the WPF
 
 #### Podfile
 ```
-platform :ios, '9.0'
+platform :ios, '10.0'
 use_frameworks!
 
 target 'target’ do
@@ -33,7 +33,7 @@ pod 'WPFoundation'
 end
 ```
 
-### Installation with Carthage (iOS 8+)
+### Installation with Carthage (iOS 10+)
 
 [Carthage](https://github.com/Carthage/Carthage) is a lightweight dependency manager for Swift and Objective-C. It leverages CocoaTouch modules and is less invasive than CocoaPods.
 
