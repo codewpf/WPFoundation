@@ -10,8 +10,8 @@
 WPFBannerView is support library.
 
 ## Requirements
-- iOS 9.0+
-- Swift 3.0+
+- iOS 10.0+
+- Swift 5.0+
 
 ## Installation
 
