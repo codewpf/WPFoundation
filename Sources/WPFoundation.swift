@@ -326,15 +326,16 @@ public extension Bundle {
         let sSize = UIScreen.main.bounds.size
         print(sSize)
         
-        var sOrientation = ""
-        switch UIApplication.shared.statusBarOrientation {
-        case .landscapeLeft, .landscapeRight :
-            sOrientation = "Landscape"
-        case .portrait, .portraitUpsideDown :
-            sOrientation = "Portrait"
-        default:
-            sOrientation = ""
-        }
+        var sOrientation = "Portrait"
+//        var sOrientation = ""
+//        switch UIApplication.shared.statusBarOrientation {
+//        case .landscapeLeft, .landscapeRight :
+//            sOrientation = "Landscape"
+//        case .portrait, .portraitUpsideDown :
+//            sOrientation = "Portrait"
+//        default:
+//            sOrientation = ""
+//        }
         
         for asset in assets {
             let size: CGSize = NSCoder.cgSize(for: asset["UILaunchImageSize"] ?? "{0, 0}")
