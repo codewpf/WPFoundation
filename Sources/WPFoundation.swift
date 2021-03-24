@@ -16,8 +16,8 @@ import CommonCrypto
 public func WPFLog<T>(_ message: T, fileName: String = #file, methodName: String =  #function, lineNumber: Int = #line)
 {
     #if DEBUG
-        let str : String = (fileName as NSString).pathComponents.last!.replacingOccurrences(of: "swift", with: "");
-        print("\(Date()) \(str)\(methodName) [\(lineNumber) line] ---------->\n\(message)")
+    let str : String = (fileName as NSString).pathComponents.last!.replacingOccurrences(of: "swift", with: "");
+    print("\(Date()) \(str)\(methodName) [\(lineNumber) line] ---------->\n\(message)")
     #endif
 }
 
@@ -26,7 +26,7 @@ public extension NSObject {
     
     class func swapMethod(originSel: Selector, swapSel: Selector) {
         if let originMet: Method = class_getInstanceMethod(self, originSel),
-            let swapMet: Method = class_getInstanceMethod(self, swapSel) {
+           let swapMet: Method = class_getInstanceMethod(self, swapSel) {
             let added = class_addMethod(self, originSel, method_getImplementation(swapMet), method_getTypeEncoding(swapMet))
             if added == true {
                 class_replaceMethod(self, swapSel, method_getImplementation(originMet), method_getTypeEncoding(originMet))
@@ -63,7 +63,7 @@ public extension NSObject {
         }
         return mutabList
     }
-
+    
 }
 
 //MARK: - 
@@ -71,6 +71,16 @@ public extension Array where Element: Equatable {
     mutating func remove(object: Element) {
         if let index = firstIndex(of: object) {
             remove(at: index)
+        }
+    }
+    
+    /// 去除数组重复元素
+    /// - Returns: 去除数组重复元素后的数组
+    func removeDuplicate() -> Array {
+       return self.enumerated().filter { (index,value) -> Bool in
+            return self.firstIndex(of: value) == index
+        }.map { (_, value) in
+            value
         }
     }
 }
@@ -150,6 +160,35 @@ public extension String {
         return nstr.contains(str)
     }
     
+    func height(with size: CGSize, font: UIFont) -> CGFloat {
+        let nss = NSString(string: self)
+        let options: NSStringDrawingOptions = [.usesLineFragmentOrigin,.usesFontLeading]
+        return CGFloat(ceilf( Float(nss.boundingRect(with: size, options: options, attributes: [.font: font], context: nil).size.height) ))
+    }
+    
+    func size(with size: CGSize, font: UIFont) -> CGSize {
+        let nss = NSString(string: self)
+        let options: NSStringDrawingOptions = [.usesLineFragmentOrigin,.usesFontLeading]
+        let size = nss.boundingRect(with: size, options: options, attributes: [.font: font], context: nil).size
+        let height = CGFloat(ceilf( Float(size.height) ))
+        let width = CGFloat(ceilf( Float(size.width) ))
+
+        return CGSize(width: width, height: height)
+    }
+    
+    func matches(for regex: String) -> [String] {
+        do {
+            let regex = try NSRegularExpression(pattern: regex)
+            let results = regex.matches(in: self, range: NSRange(self.startIndex..., in: self))
+            return results.map {
+                String(self[Range($0.range(at: 1), in: self)!])
+            }
+        } catch let error {
+            print("invalid regex: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
     
 }
 
@@ -195,9 +234,9 @@ public extension UIColor {
     /// - Parameter iHex: int hex code (eg. 0x33ff99)
     convenience init(iHex: Int64) {
         guard iHex <= 0xffffff,
-            iHex >= 0x000000 else {
-                self.init(red: 1, green: 1, blue: 1, alpha: 1)
-                return
+              iHex >= 0x000000 else {
+            self.init(red: 1, green: 1, blue: 1, alpha: 1)
+            return
         }
         
         let fRed: CGFloat = CGFloat((iHex & 0xff0000) >> 16)
@@ -319,23 +358,23 @@ public extension Bundle {
     
     var bundleLaunchImageName: String {
         guard let info = Bundle.main.infoDictionary,
-            let assets: [[String:String]] = info["UILaunchImages"] as? [[String : String]] else {
-                return ""
+              let assets: [[String:String]] = info["UILaunchImages"] as? [[String : String]] else {
+            return ""
         }
         
         let sSize = UIScreen.main.bounds.size
         print(sSize)
         
-        var sOrientation = "Portrait"
-//        var sOrientation = ""
-//        switch UIApplication.shared.statusBarOrientation {
-//        case .landscapeLeft, .landscapeRight :
-//            sOrientation = "Landscape"
-//        case .portrait, .portraitUpsideDown :
-//            sOrientation = "Portrait"
-//        default:
-//            sOrientation = ""
-//        }
+        let sOrientation = "Portrait"
+        //        var sOrientation = ""
+        //        switch UIApplication.shared.statusBarOrientation {
+        //        case .landscapeLeft, .landscapeRight :
+        //            sOrientation = "Landscape"
+        //        case .portrait, .portraitUpsideDown :
+        //            sOrientation = "Portrait"
+        //        default:
+        //            sOrientation = ""
+        //        }
         
         for asset in assets {
             let size: CGSize = NSCoder.cgSize(for: asset["UILaunchImageSize"] ?? "{0, 0}")
@@ -441,6 +480,87 @@ public extension UIView {
     
 }
 
+public extension UIView {
+    
+    /// Part corner
+    ///
+    /// - Parameters:
+    ///   - corners: directions, multiple
+    ///   - radii: corners radius
+    /// - Examples:
+    ///   let cornerss: UIRectCorner = [.bottomLeft,.bottomRight]
+    ///   self.addPartCorners(byRoundingCorners: cornerss, radii: 10.0)
+    func addPartCorners(byRoundingCorners corners: UIRectCorner, radii: CGFloat) {
+        let maskPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radii, height: radii))
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = self.bounds
+        maskLayer.path = maskPath.cgPath
+        self.layer.mask = maskLayer
+    }
+    
+    
+    /// - Parameters:
+    ///   - radius: corner radius
+    ///   - size: image size
+    func imageWithCorners(_ radius: CGFloat, size: CGSize) -> UIImage? {
+        let rect = CGRect(origin: CGPoint.zero, size: size)
+        UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+        let context = UIGraphicsGetCurrentContext()
+        let path = UIBezierPath.init(roundedRect: rect, byRoundingCorners: .allCorners, cornerRadii: CGSize(width: radius, height: radius))
+        context?.addPath(path.cgPath)
+        context?.clip()
+        self.draw(rect)
+        context?.drawPath(using: .fillStroke)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
+    func removeAllSubviews() {
+        for sub in self.subviews {
+            sub.removeFromSuperview()
+        }
+    }
+    
+    
+    func dropShadow(color: UIColor = .gray, opacity: Float = 0.5, offSet: CGSize, radius: CGFloat = 5, scale: Bool = true) {
+        layer.masksToBounds = false
+        layer.shadowColor = color.cgColor
+        layer.shadowOpacity = opacity
+        layer.shadowOffset = offSet
+        layer.shadowRadius = radius
+        layer.shadowPath = UIBezierPath(rect: self.bounds).cgPath
+        layer.shouldRasterize = true
+        layer.rasterizationScale = scale ? UIScreen.main.scale : 1
+    }
+    
+}
+
+public extension CALayer {
+    func applySketchShadow(
+        color: CGColor,
+        alpha: Float,
+        x: CGFloat,
+        y: CGFloat,
+        blur: CGFloat,
+        spread: CGFloat)
+    {
+        shadowColor = color
+        shadowOpacity = alpha
+        shadowOffset = CGSize(width: x, height: y)
+        shadowRadius = blur / 2.0
+        if spread == 0 {
+            shadowPath = nil
+        } else {
+            let dx = -spread
+            let rect = bounds.insetBy(dx: dx, dy: dx)
+            shadowPath = UIBezierPath(rect: rect).cgPath
+        }
+    }
+}
+
+
+
 //MARK: -
 public extension CGRect {
     var kLeft: CGFloat {
@@ -531,43 +651,83 @@ public extension UIDevice {
             guard let value = element.value as? Int8, value != 0 else { return identifier }
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
-        
-        switch identifier {
-        case "iPod5,1":                                 return "iPod Touch 5"
-        case "iPod7,1":                                 return "iPod Touch 6"
-        case "iPhone3,1", "iPhone3,2", "iPhone3,3":     return "iPhone 4"
-        case "iPhone4,1":                               return "iPhone 4S"
-        case "iPhone5,1", "iPhone5,2":                  return "iPhone 5"
-        case "iPhone5,3", "iPhone5,4":                  return "iPhone 5C"
-        case "iPhone6,1", "iPhone6,2":                  return "iPhone 5S"
-        case "iPhone7,2":                               return "iPhone 6"
-        case "iPhone7,1":                               return "iPhone 6 Plus"
-        case "iPhone8,1":                               return "iPhone 6S"
-        case "iPhone8,2":                               return "iPhone 6S Plus"
-        case "iPhone8,4":                               return "iPhone SE"
-        case "iPhone9,1":                               return "iPhone 7"
-        case "iPhone9,2":                               return "iPhone 7 Plus"
-        case "iPhone10,1", "iPhone10,4":                return "iPhone 8"
-        case "iPhone10,2", "iPhone10,5":                return "iPhone 8 Plus"
-        case "iPhone10,3", "iPhone10,6":                return "iPhone X"
-        case "iPhone11,2":                              return "iPhone XS"
-        case "iPhone11,4", "iPhone11,6":                return "iPhone XS Max"
-        case "iPhone11,8":                              return "iPhone XR"
-        case "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4":return "iPad 2"
-        case "iPad3,1", "iPad3,2", "iPad3,3":           return "iPad 3"
-        case "iPad3,4", "iPad3,5", "iPad3,6":           return "iPad 4"
-        case "iPad4,1", "iPad4,2", "iPad4,3":           return "iPad Air"
-        case "iPad5,3", "iPad5,4":                      return "iPad Air 2"
-        case "iPad2,5", "iPad2,6", "iPad2,7":           return "iPad Mini"
-        case "iPad4,4", "iPad4,5", "iPad4,6":           return "iPad Mini 2"
-        case "iPad4,7", "iPad4,8", "iPad4,9":           return "iPad Mini 3"
-        case "iPad5,1", "iPad5,2":                      return "iPad Mini 4"
-        case "iPad6,7", "iPad6,8":                      return "iPad Pro"
-        case "AppleTV5,3":                              return "Apple TV"
-        case "i386", "x86_64":                          return "Simulator"
-        default:                                        return identifier
+
+        func mapToDevice(identifier: String) -> String { // swiftlint:disable:this cyclomatic_complexity
+            #if os(iOS)
+            switch identifier {
+            case "iPod5,1":                                 return "iPod touch (5th generation)"
+            case "iPod7,1":                                 return "iPod touch (6th generation)"
+            case "iPod9,1":                                 return "iPod touch (7th generation)"
+            case "iPhone3,1", "iPhone3,2", "iPhone3,3":     return "iPhone 4"
+            case "iPhone4,1":                               return "iPhone 4s"
+            case "iPhone5,1", "iPhone5,2":                  return "iPhone 5"
+            case "iPhone5,3", "iPhone5,4":                  return "iPhone 5c"
+            case "iPhone6,1", "iPhone6,2":                  return "iPhone 5s"
+            case "iPhone7,2":                               return "iPhone 6"
+            case "iPhone7,1":                               return "iPhone 6 Plus"
+            case "iPhone8,1":                               return "iPhone 6s"
+            case "iPhone8,2":                               return "iPhone 6s Plus"
+            case "iPhone8,4":                               return "iPhone SE"
+            case "iPhone9,1", "iPhone9,3":                  return "iPhone 7"
+            case "iPhone9,2", "iPhone9,4":                  return "iPhone 7 Plus"
+            case "iPhone10,1", "iPhone10,4":                return "iPhone 8"
+            case "iPhone10,2", "iPhone10,5":                return "iPhone 8 Plus"
+            case "iPhone10,3", "iPhone10,6":                return "iPhone X"
+            case "iPhone11,2":                              return "iPhone XS"
+            case "iPhone11,4", "iPhone11,6":                return "iPhone XS Max"
+            case "iPhone11,8":                              return "iPhone XR"
+            case "iPhone12,1":                              return "iPhone 11"
+            case "iPhone12,3":                              return "iPhone 11 Pro"
+            case "iPhone12,5":                              return "iPhone 11 Pro Max"
+            case "iPhone12,8":                              return "iPhone SE (2nd generation)"
+            case "iPhone13,1":                              return "iPhone 12 mini"
+            case "iPhone13,2":                              return "iPhone 12"
+            case "iPhone13,3":                              return "iPhone 12 Pro"
+            case "iPhone13,4":                              return "iPhone 12 Pro Max"
+            case "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4":return "iPad 2"
+            case "iPad3,1", "iPad3,2", "iPad3,3":           return "iPad (3rd generation)"
+            case "iPad3,4", "iPad3,5", "iPad3,6":           return "iPad (4th generation)"
+            case "iPad6,11", "iPad6,12":                    return "iPad (5th generation)"
+            case "iPad7,5", "iPad7,6":                      return "iPad (6th generation)"
+            case "iPad7,11", "iPad7,12":                    return "iPad (7th generation)"
+            case "iPad11,6", "iPad11,7":                    return "iPad (8th generation)"
+            case "iPad4,1", "iPad4,2", "iPad4,3":           return "iPad Air"
+            case "iPad5,3", "iPad5,4":                      return "iPad Air 2"
+            case "iPad11,3", "iPad11,4":                    return "iPad Air (3rd generation)"
+            case "iPad13,1", "iPad13,2":                    return "iPad Air (4th generation)"
+            case "iPad2,5", "iPad2,6", "iPad2,7":           return "iPad mini"
+            case "iPad4,4", "iPad4,5", "iPad4,6":           return "iPad mini 2"
+            case "iPad4,7", "iPad4,8", "iPad4,9":           return "iPad mini 3"
+            case "iPad5,1", "iPad5,2":                      return "iPad mini 4"
+            case "iPad11,1", "iPad11,2":                    return "iPad mini (5th generation)"
+            case "iPad6,3", "iPad6,4":                      return "iPad Pro (9.7-inch)"
+            case "iPad7,3", "iPad7,4":                      return "iPad Pro (10.5-inch)"
+            case "iPad8,1", "iPad8,2", "iPad8,3", "iPad8,4":return "iPad Pro (11-inch) (1st generation)"
+            case "iPad8,9", "iPad8,10":                     return "iPad Pro (11-inch) (2nd generation)"
+            case "iPad6,7", "iPad6,8":                      return "iPad Pro (12.9-inch) (1st generation)"
+            case "iPad7,1", "iPad7,2":                      return "iPad Pro (12.9-inch) (2nd generation)"
+            case "iPad8,5", "iPad8,6", "iPad8,7", "iPad8,8":return "iPad Pro (12.9-inch) (3rd generation)"
+            case "iPad8,11", "iPad8,12":                    return "iPad Pro (12.9-inch) (4th generation)"
+            case "AppleTV5,3":                              return "Apple TV"
+            case "AppleTV6,2":                              return "Apple TV 4K"
+            case "AudioAccessory1,1":                       return "HomePod"
+            case "AudioAccessory5,1":                       return "HomePod mini"
+            case "i386", "x86_64":                          return "Simulator \(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "iOS"))"
+            default:                                        return identifier
+            }
+            #elseif os(tvOS)
+            switch identifier {
+            case "AppleTV5,3": return "Apple TV 4"
+            case "AppleTV6,2": return "Apple TV 4K"
+            case "i386", "x86_64": return "Simulator \(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "tvOS"))"
+            default: return identifier
+            }
+            #endif
         }
+
+        return mapToDevice(identifier: identifier)
     }
+    
     
 }
 
