@@ -7,7 +7,7 @@ s.license          = { :type => 'MIT', :file => 'LICENSE' }
 s.homepage         = 'https://github.com/codewpf/WPFoundation'
 
 s.author           = { 'Alex' => 'ioswpf@gmail.com' }
-#s.social_media_url   = "https://twitter.com/Alex___0394"
+s.social_media_url   = "https://github.com/codewpf"
 
 s.platform     = :ios, "10.0"
 
