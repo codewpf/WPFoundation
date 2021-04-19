@@ -77,10 +77,21 @@ public extension Array where Element: Equatable {
     /// 去除数组重复元素
     /// - Returns: 去除数组重复元素后的数组
     func removeDuplicate() -> Array {
-       return self.enumerated().filter { (index,value) -> Bool in
+        return self.enumerated().filter { (index,value) -> Bool in
             return self.firstIndex(of: value) == index
         }.map { (_, value) in
             value
+        }
+    }
+}
+
+
+extension Array where Element: Hashable {
+    var unique:[Element] {
+        var uniq = Set<Element>()
+        uniq.reserveCapacity(self.count)
+        return self.filter {
+            return uniq.insert($0).inserted
         }
     }
 }
@@ -190,6 +201,56 @@ public extension String {
     }
     
     
+    func compareVersion(with other: String) -> Int {
+        guard self != other else {
+            return 0
+        }
+        
+        var result: Int = 0
+        
+        
+        var str = self
+        var another = other
+
+        let sp1 = str.split(separator: ".").count
+        let sp2 = another.split(separator: ".").count
+        if sp1 != sp2 {
+            let count = Int(fabs(Double(sp1 - sp2)))
+            if sp1 > sp2 {
+                for _ in 0 ..< count {
+                    another += ".0"
+                }
+            } else {
+                for _ in 0 ..< count {
+                    str += ".0"
+                }
+            }
+        }
+
+        
+        let selfArray = str.split(separator: ".").map{Int64($0) ?? 0}
+        let otherArray = another.split(separator: ".").map{Int64($0) ?? 0}
+        
+        for i in 0 ..< selfArray.count {
+            
+            let currentSelf = selfArray[i]
+            let currentOther = otherArray[i]
+            
+            if currentSelf > currentOther {
+                result = 1
+                break
+            } else if currentSelf < currentOther {
+                result = -1
+                break
+            } else {
+                continue
+            }
+        }
+        
+        
+        return result
+    }
+
 }
 
 
