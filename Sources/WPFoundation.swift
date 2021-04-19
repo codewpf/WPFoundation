@@ -68,15 +68,21 @@ public extension NSObject {
 
 //MARK: - 
 public extension Array where Element: Equatable {
-    mutating func remove(object: Element) {
+    mutating func removed(object: Element) {
         if let index = firstIndex(of: object) {
             remove(at: index)
         }
     }
     
+    func remove(object: Element) -> [Element] {
+        var result = self
+        result.removed(object: object)
+        return result
+    }
+    
     /// 去除数组重复元素
     /// - Returns: 去除数组重复元素后的数组
-    func removeDuplicate() -> Array {
+    func removeDuplicate() -> [Element] {
         return self.enumerated().filter { (index,value) -> Bool in
             return self.firstIndex(of: value) == index
         }.map { (_, value) in
@@ -154,15 +160,17 @@ public extension String {
     }
     
     /// 替换字符串
-    mutating func replace(range: NSRange, place: String = "****") {
+    func replace(range: NSRange, place: String = "****") -> String {
+        var result = self
         
         if let r = Range.init(range) {
             let start = self.index(self.startIndex, offsetBy: r.lowerBound)
             let end = self.index(self.startIndex, offsetBy: r.upperBound)
             let range = start..<end
             
-            self.replaceSubrange(range, with: place)
+            result.replaceSubrange(range, with: place)
         }
+        return result
     }
     
     
@@ -187,19 +195,23 @@ public extension String {
         return CGSize(width: width, height: height)
     }
     
-    func matches(for regex: String) -> [String] {
+    func matches(for regex:String) -> [String] {
         do {
-            let regex = try NSRegularExpression(pattern: regex)
-            let results = regex.matches(in: self, range: NSRange(self.startIndex..., in: self))
-            return results.map {
-                String(self[Range($0.range(at: 1), in: self)!])
+            let regex: NSRegularExpression = try NSRegularExpression(pattern: regex, options: [])
+            let matches = regex.matches(in: self, options: [], range: NSMakeRange(0, self.count))
+            
+            var data:[String] = Array()
+            for item in matches {
+                let string = (self as NSString).substring(with: item.range)
+                data.append(string)
             }
-        } catch let error {
-            print("invalid regex: \(error.localizedDescription)")
+            
+            return data
+        }
+        catch {
             return []
         }
     }
-    
     
     func compareVersion(with other: String) -> Int {
         guard self != other else {
@@ -331,16 +343,6 @@ public extension UIColor {
     
 }
 
-//MARK: -
-public extension Dictionary {
-    func paraStr() -> String {
-        var str = ""
-        for (key, value) in self {
-            str += "&\(key)=\(value)"
-        }
-        return str.substring(from: 1)
-    }
-}
 
 //MARK: -
 public extension UIImage {
@@ -446,30 +448,6 @@ public extension Bundle {
             
         }
         return ""
-    }
-}
-//MARK: -
-public extension UINavigationBar {
-    class func initializeOneMethod() {
-        DispatchQueue.once(token: "Update_UINavigationBar_Layout_Margin") {
-            self.swapMethod(originSel: #selector(layoutSubviews), swapSel: #selector(wpfLayoutSubviews))
-        }
-    }
-    
-    @objc func wpfLayoutSubviews() {
-        self.wpfLayoutSubviews()
-        
-        // Solve the problem that left margin is too wide
-        if #available(iOS 11.0, *) {
-            self.layoutMargins = UIEdgeInsets.zero
-            let space: CGFloat = 8
-            for subview in self.subviews {
-                if NSStringFromClass(type(of: subview)).contains("ContentView") {
-                    subview.layoutMargins = UIEdgeInsets(top: 0, left: space, bottom: 0, right: space)
-                }
-            }
-        }
-        
     }
 }
 
@@ -800,22 +778,4 @@ public extension Date {
         return formatter.string(from: self)
     }
 }
-
-//MARK: -
-public extension DispatchQueue {
-    private static var onceTracker = [String]()
-    
-    class func once(token: String, block:()->Void) {
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
-        
-        if onceTracker.contains(token) {
-            return
-        }
-        
-        onceTracker.append(token)
-        block()
-    }
-}
-
 
