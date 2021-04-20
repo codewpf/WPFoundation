@@ -13,10 +13,10 @@
 
 
 
-WPFBannerView is support library.
+WPFoundation is support library.
 
 ## Requirements
-- iOS 10.0+
+- iOS 12.0+
 - Swift 5.0+
 
 ## Installation
@@ -31,7 +31,7 @@ There are two way to use WPFBannerView in your project, or directly drag the WPF
 
 #### Podfile
 ```
-platform :ios, '10.0'
+platform :ios, '12.0'
 use_frameworks!
 
 target 'target’ do
@@ -62,4 +62,4 @@ import WPFoundation
 Follow and contact me on [Twitter](https://twitter.com/Alex___0394) or [Sina Weibo](http://weibo.com/codewpf ). If you find an issue, just [open a ticket](https://github.com/codewpf/WPFoundation/issues/new). Pull requests are warmly welcome as well.
 
 ## License
-WPFBannerView is released under the MIT license. See LICENSE for details.
+WPFoundation is released under the MIT license. See LICENSE for details.
