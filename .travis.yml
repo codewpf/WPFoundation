@@ -1,6 +1,0 @@
-
-language: swift
-osx_image: xcode12.2
-script:
-  - xcodebuild test -project 'WPFoundation.xcodeproj' -scheme 'WPFoundationUnitTests' -destination 'platform=macOS'
-
