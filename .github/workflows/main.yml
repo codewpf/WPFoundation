@@ -12,6 +12,6 @@ jobs:
         uses: actions/checkout@master
       - name: Build and test
         run: |
-          xcodebuild clean test -project WPFoundation.xcodeproj -scheme WPFoundationUnitTests -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
+          xcodebuild test -project WPFoundation.xcodeproj -scheme WPFoundationUnitTests -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
         env: 
          destination: ${{ matrix.destination }}
