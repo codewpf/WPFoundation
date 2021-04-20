@@ -150,8 +150,8 @@ class WPFoundationUnitTests: XCTestCase {
         XCTAssert("3.0.0.1".compareVersion(with: "3.0.0.0.1") == 1)
 
         XCTAssert("2.2.1".compareVersion(with: "2.2.01") == 0)
-        XCTAssert("2.2.3.4.5.6".compareVersion(with: "2.2.3.4.5.12") == -1)
-        XCTAssert("2.2.3.4.5.6".compareVersion(with: "2.2.2.4.5.12") == 1)
+        XCTAssert("2.2.3.4.5.6".compareVersion(with: "2.2.3.4.5.13") == -1)
+        XCTAssert("2.2.3.4.5.6".compareVersion(with: "2.2.2.4.5.13") == 1)
         
     }
 
