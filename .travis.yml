@@ -2,5 +2,5 @@
 language: swift
 osx_image: xcode12.2
 script:
-  - xcodebuild test -project 'WPFoundation.xcodeproj' -scheme 'WPFoundationUnitTests' -destination 'platform=iOS Simulator,OS=14.2,name=iPhone 12 Pro Max'
+  - xcodebuild test -project 'WPFoundation.xcodeproj' -scheme 'WPFoundationUnitTests' -destination 'platform=macOS'
 
