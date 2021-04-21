@@ -347,6 +347,21 @@ public extension UIColor {
 //MARK: -
 public extension UIImage {
     
+    static var appIcon: UIImage? {
+        get {
+            guard let iconsDictionary = Bundle.main.infoDictionary?["CFBundleIcons"] as? Dictionary<String, Any>,
+                let primaryIconsDictionary = iconsDictionary["CFBundlePrimaryIcon"] as? Dictionary<String, Any>,
+                let iconFiles = primaryIconsDictionary["CFBundleIconFiles"] as? [Any],
+                // First will be smallest for the device class, last will be the largest for device class
+                let lastIcon = iconFiles.last as? String,
+                let icon = UIImage(named: lastIcon) else {
+                    return nil
+                }
+            return icon
+        }
+    }
+
+    
     static func image(withColor color: UIColor, _ rect: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1)) -> UIImage {
         
         UIGraphicsBeginImageContextWithOptions(rect.size, false, UIScreen.screenS)
