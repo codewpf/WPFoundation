@@ -71,7 +71,16 @@ class WPFoundationUnitTests: XCTestCase {
         let origin: String = "md5string"
         let after: String = "ECDE697067DD080B187996A22550F6F3"
         
-        let result = origin.md5.uppercased()
+        let result = origin.md5
+        
+        XCTAssertEqual(result, after)
+    }
+    
+    func testSHA256String() {
+        let origin: String = "sha256string"
+        let after: String = "AC8EB6B5462B90B6199D24F524F423D5298D13E113A6F778299243A52B04D993"
+        
+        let result = origin.sha256
         
         XCTAssertEqual(result, after)
     }
