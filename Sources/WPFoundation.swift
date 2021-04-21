@@ -10,6 +10,7 @@
 import Foundation
 import UIKit
 import CommonCrypto
+import CryptoKit
 
 
 /// 自定义输出
@@ -102,6 +103,18 @@ extension Array where Element: Hashable {
     }
 }
 
+
+@available(iOS 13.0, *)
+extension Digest {
+    var bytes: [UInt8] { Array(makeIterator()) }
+    var data: Data { Data(bytes) }
+
+    var hexStr: String {
+        bytes.map { String(format: "%02X", $0) }.joined()
+    }
+}
+
+
 //MARK: -
 public extension String {
     
@@ -110,22 +123,40 @@ public extension String {
         return self.count
     }
     
+    @available(iOS 13.0, *)
+    var sha256: String {
+        get {
+            guard let data = self.data(using: .utf8) else { return  self}
+            let digest = SHA256.hash(data: data)
+            return digest.hexStr.uppercased()
+        }
+    }
+    
     var md5: String {
-        guard let data = self.data(using: .utf8) else {
-            return self
+        if #available(iOS 13.0, *) {
+            guard let data = self.data(using: .utf8) else {
+                return self
+            }
+            let digest = Insecure.MD5.hash(data: data)
+
+            return digest.map {
+                String(format: "%02hhx", $0)
+            }.joined().uppercased()
+        } else {
+            guard let data = self.data(using: .utf8) else { return self }
+            var digest = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
+            #if swift(>=5.0)
+            _ = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                return CC_MD5(bytes.baseAddress, CC_LONG(data.count), &digest)
+            }
+            #else
+            _ = data.withUnsafeBytes { bytes in
+                return CC_MD5(bytes, CC_LONG(data.count), &digest)
+            }
+            #endif
+            
+            return digest.reduce(into: "") { $0 += String(format: "%02x", $1) }.uppercased()
         }
-        var digest = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-        #if swift(>=5.0)
-        _ = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
-            return CC_MD5(bytes.baseAddress, CC_LONG(data.count), &digest)
-        }
-        #else
-        _ = data.withUnsafeBytes { bytes in
-            return CC_MD5(bytes, CC_LONG(data.count), &digest)
-        }
-        #endif
-        
-        return digest.reduce(into: "") { $0 += String(format: "%02x", $1) }
     }
     
     /// 截取字符串 from
@@ -268,41 +299,7 @@ public extension String {
 
 //MARK: -
 public extension UIColor {
-    
-    /// 16进制
-    /// - Parameter sHex: string hex code (eg. "00EEEE")
-    convenience init(sHex: String) {
-        var str: String = sHex.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines).uppercased()
         
-        if str.hasPrefix("#") {
-            let sIndex = str.index(str.startIndex, offsetBy: 1)
-            str = String(str[sIndex..<str.endIndex])
-        }
-        
-        var r:CUnsignedInt = 255
-        var g:CUnsignedInt = 255
-        var b:CUnsignedInt = 255
-        var a:CUnsignedInt = 255
-        
-        if str.length == 6 || str.length == 8 {
-            
-            let strRed = str.substring(range: NSMakeRange(0, 2))
-            let strGreen = str.substring(range: NSMakeRange(2, 2))
-            let strBlue = str.substring(range: NSMakeRange(4, 2))
-            
-            Scanner(string: strRed).scanHexInt32(&r)
-            Scanner(string: strGreen).scanHexInt32(&g)
-            Scanner(string: strBlue).scanHexInt32(&b)
-            
-            if str.length > 6 {
-                let strAlpha = str.substring(range: NSMakeRange(6, 2))
-                Scanner(string: strAlpha).scanHexInt32(&a)
-            }
-        }
-        
-        self.init(red: CGFloat(r)/255.0, green: CGFloat(g)/255.0, blue: CGFloat(b)/255.0, alpha: CGFloat(a)/255.0)
-    }
-    
     /// Init color with hex code
     /// - Parameter iHex: int hex code (eg. 0x33ff99)
     convenience init(iHex: Int64) {
