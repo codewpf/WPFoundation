@@ -81,19 +81,24 @@ public extension Array where Element: Equatable {
         return result
     }
     
-    /// 去除数组重复元素
-    /// - Returns: 去除数组重复元素后的数组
-    func removeDuplicate() -> [Element] {
-        return self.enumerated().filter { (index,value) -> Bool in
-            return self.firstIndex(of: value) == index
-        }.map { (_, value) in
-            value
+}
+
+public extension Array where Element: Hashable {
+    func removDuplicates() -> [Element] {
+        var addedDict = [Element: Bool]()
+
+        return filter {
+            addedDict.updateValue(true, forKey: $0) == nil
         }
+    }
+
+    mutating func removedDuplicates() {
+        self = self.removDuplicates()
     }
 }
 
 
-extension Array where Element: Hashable {
+public extension Array where Element: Hashable {
     var unique:[Element] {
         var uniq = Set<Element>()
         uniq.reserveCapacity(self.count)
@@ -108,7 +113,7 @@ extension Array where Element: Hashable {
 extension Digest {
     var bytes: [UInt8] { Array(makeIterator()) }
     var data: Data { Data(bytes) }
-
+    
     var hexStr: String {
         bytes.map { String(format: "%02X", $0) }.joined()
     }
@@ -138,7 +143,7 @@ public extension String {
                 return self
             }
             let digest = Insecure.MD5.hash(data: data)
-
+            
             return digest.map {
                 String(format: "%02hhx", $0)
             }.joined().uppercased()
@@ -222,7 +227,7 @@ public extension String {
         let size = nss.boundingRect(with: size, options: options, attributes: [.font: font], context: nil).size
         let height = CGFloat(ceilf( Float(size.height) ))
         let width = CGFloat(ceilf( Float(size.width) ))
-
+        
         return CGSize(width: width, height: height)
     }
     
@@ -254,7 +259,7 @@ public extension String {
         
         var str = self
         var another = other
-
+        
         let sp1 = str.split(separator: ".").count
         let sp2 = another.split(separator: ".").count
         if sp1 != sp2 {
@@ -269,7 +274,7 @@ public extension String {
                 }
             }
         }
-
+        
         
         let selfArray = str.split(separator: ".").map{Int64($0) ?? 0}
         let otherArray = another.split(separator: ".").map{Int64($0) ?? 0}
@@ -293,13 +298,13 @@ public extension String {
         
         return result
     }
-
+    
 }
 
 
 //MARK: -
 public extension UIColor {
-        
+    
     /// Init color with hex code
     /// - Parameter iHex: int hex code (eg. 0x33ff99)
     convenience init(iHex: Int64) {
@@ -347,17 +352,17 @@ public extension UIImage {
     static var appIcon: UIImage? {
         get {
             guard let iconsDictionary = Bundle.main.infoDictionary?["CFBundleIcons"] as? Dictionary<String, Any>,
-                let primaryIconsDictionary = iconsDictionary["CFBundlePrimaryIcon"] as? Dictionary<String, Any>,
-                let iconFiles = primaryIconsDictionary["CFBundleIconFiles"] as? [Any],
-                // First will be smallest for the device class, last will be the largest for device class
-                let lastIcon = iconFiles.last as? String,
-                let icon = UIImage(named: lastIcon) else {
-                    return nil
-                }
+                  let primaryIconsDictionary = iconsDictionary["CFBundlePrimaryIcon"] as? Dictionary<String, Any>,
+                  let iconFiles = primaryIconsDictionary["CFBundleIconFiles"] as? [Any],
+                  // First will be smallest for the device class, last will be the largest for device class
+                  let lastIcon = iconFiles.last as? String,
+                  let icon = UIImage(named: lastIcon) else {
+                return nil
+            }
             return icon
         }
     }
-
+    
     
     static func image(withColor color: UIColor, _ rect: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1)) -> UIImage {
         
@@ -410,6 +415,36 @@ public extension UIImage {
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return newImage
+    }
+}
+
+//MARK: -
+extension UIImage {
+    func imageByRemoveWhiteBg() -> UIImage? {
+        let colorMasking: [CGFloat] = [222, 255, 222, 255, 222, 255]
+        return self.transparentColor(colorMasking: colorMasking)
+    }
+    
+    func imageByRemoveBlackBg() -> UIImage? {
+        let colorMasking: [CGFloat] = [0, 32, 0, 32, 0, 32]
+        return self.transparentColor(colorMasking: colorMasking)
+    }
+    
+    func transparentColor(colorMasking: [CGFloat]) -> UIImage? {
+        if let rawImageRef = self.cgImage {
+            UIGraphicsBeginImageContext(self.size)
+            if let maskedImageRef = rawImageRef.copy(maskingColorComponents: colorMasking) {
+                let context: CGContext = UIGraphicsGetCurrentContext()!
+                context.translateBy(x: 0.0, y: self.size.height)
+                context.scaleBy(x: 1.0, y: -1.0)
+                let rect = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height)
+                context.draw(maskedImageRef, in: rect)
+                let result = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
+                return result
+            }
+        }
+        return nil
     }
 }
 
@@ -702,7 +737,7 @@ public extension UIDevice {
             guard let value = element.value as? Int8, value != 0 else { return identifier }
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
-
+        
         func mapToDevice(identifier: String) -> String { // swiftlint:disable:this cyclomatic_complexity
             #if os(iOS)
             switch identifier {
@@ -775,7 +810,7 @@ public extension UIDevice {
             }
             #endif
         }
-
+        
         return mapToDevice(identifier: identifier)
     }
     
