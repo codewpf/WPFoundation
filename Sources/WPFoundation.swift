@@ -4,8 +4,6 @@
 //
 //  Created by alex on 2017/7/8.
 //
-//  old version 0.3.5
-//  new version 0.4.0
 
 import Foundation
 import UIKit

@@ -43,7 +43,7 @@ class WPFoundationUnitTests: XCTestCase {
         let origin: [Int] = [1,1,3,3,5,5,7,7,9,9]
         let after: [Int] = [1,3,5,7,9]
         
-        let result = origin.removeDuplicate()
+        let result = origin.removDuplicates()
         
         XCTAssertEqual(result, after)
     }
