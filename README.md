@@ -21,10 +21,23 @@ WPFoundation is support library.
 
 ## Installation
 
-There are two way to use WPFBannerView in your project, or directly drag the WPFBannerView file into your project:
+There are three ways to use WPFoundation in your project, or directly drag the WPFoundation.swift file into your project:
 
+- using Swift Package Manager
 - using CocoaPods
 - using Carthage
+
+### Installation with Swift Package Manager
+
+The [Swift Package Manager](https://swift.org/package-manager/) is a tool for managing the distribution of Swift code. It’s integrated with the Swift build system to automate the process of downloading, compiling, and linking dependencies.
+
+The Package Manager is included in Swift 3.0 and above.
+
+#### Steps
+
+* File > Swift Packages > Add Package Dependency
+* Add https://github.com/codewpf/WPFoundation.git
+* Select "Up to Next Major" with "1.0.0"
 
 ### Installation with CocoaPods
 [CocoaPods](http://cocoapods.org/) is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries in your projects. See the [Get Started](http://cocoapods.org/#get_started) section for more details.
@@ -39,7 +52,7 @@ pod 'WPFoundation'
 end
 ```
 
-### Installation with Carthage (iOS 10+)
+### Installation with Carthage (iOS 12.0 +)
 
 [Carthage](https://github.com/Carthage/Carthage) is a lightweight dependency manager for Swift and Objective-C. It leverages CocoaTouch modules and is less invasive than CocoaPods.
 
