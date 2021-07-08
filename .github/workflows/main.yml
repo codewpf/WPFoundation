@@ -1,8 +1,7 @@
 on: pull_request
-name: Test
+name: build
 jobs:
   test:
-    name: Test
     runs-on: macOS-latest
     strategy:
         matrix:
