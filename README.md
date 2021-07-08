@@ -2,7 +2,8 @@
 
 
 <p align="center">
-<a href="https://github.com/codewpf/WPFoundation/actions/workflows/main.yml"><img src="https://img.shields.io/github/workflow/status/codewpf/WPFoundation/Test"></a>
+<a href="https://github.com/codewpf/WPFoundation/actions/workflows/main.yml"><img src="https://github.com/codewpf/WPFoundation/actions/workflows/main.yml/badge.svg?branch=dev"></a>
+<a href="https://swift.org/package-manager/"><img src="https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat"></a>
 <a href="https://cocoapods.org/pods/WPFoundation"><img alt="Cocoapods" src="https://img.shields.io/cocoapods/v/WPFoundation">
 <a href="https://github.com/Carthage/Carthage/"><img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat"></a>
 <br />
