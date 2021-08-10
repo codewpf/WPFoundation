@@ -643,6 +643,43 @@ public extension CALayer {
     }
 }
 
+//MARK: -
+
+protocol WPFLayoutable {}
+extension WPFLayoutable {
+    var bottomInset: CGFloat {
+        get {
+            let name = UIDevice.current.modelName
+            if name.contains("iPhone X") || name.contains("Simulator") { return 34
+            } else { return 0 }
+        }
+    }
+    
+    var statusBarHeight: CGFloat {
+        get {
+            guard let window = UIApplication.shared.delegate?.window else { return 20.0 }
+            if #available(iOS 13.0, *) {
+                return window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0.0
+            } else {
+                return 20.0
+            }
+        }
+    }
+}
+
+extension WPFLayoutable where Self: UIViewController {
+    var navigationBarHeight: CGFloat {
+        get {
+            guard let bar = self.navigationController?.navigationBar else {
+                return 0
+            }
+            return bar.frame.height
+        }
+    }
+}
+
+
+
 
 
 //MARK: -
