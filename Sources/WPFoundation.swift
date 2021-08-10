@@ -645,8 +645,8 @@ public extension CALayer {
 
 //MARK: -
 
-protocol WPFLayoutable {}
-extension WPFLayoutable {
+public protocol WPFLayoutable {}
+public extension WPFLayoutable {
     var bottomInset: CGFloat {
         get {
             let name = UIDevice.current.modelName
@@ -667,7 +667,7 @@ extension WPFLayoutable {
     }
 }
 
-extension WPFLayoutable where Self: UIViewController {
+public extension WPFLayoutable where Self: UIViewController {
     var navigationBarHeight: CGFloat {
         get {
             guard let bar = self.navigationController?.navigationBar else {
